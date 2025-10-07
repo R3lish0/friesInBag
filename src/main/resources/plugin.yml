@@ -1,0 +1,14 @@
+name: ExamplePlugin
+version: 1.0.0
+main: io.papermc.testplugin.ExamplePlugin
+description: An example plugin
+author: PaperMC
+website: https://papermc.io
+api-version: '1.21.8'
+commands:
+  startShift:
+    description: starts a shift at the minecraft
+    usage: /startShift
+  endShift:
+    description: ends your shift and demolishes the McDonald's
+    usage: /endShift
