@@ -13,18 +13,68 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+
+import org.bukkit.block.Block;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import static org.bukkit.Bukkit.getLogger;
 
 
-public class McDonaldsBuilding {
+public class McDonaldsBuilding  {
+
+
+    private IceCreamMachine iceCreamMachine;
+    private Fryer fryer1;
+    private Fryer fryer2;
+    private Fryer fryer3;
+    private Location location;
+    private BlockVector3 dimensions;
+
+
+    public McDonaldsBuilding(Player player) {
+        // Get random location 50 blocks above ground, within 500 block radius of player
+        Location buildLocation = McDonaldsBuilding.getRandomLocationAboveGround(
+                player.getWorld(),
+                player.getLocation().getBlockX(),
+                player.getLocation().getBlockZ(),
+                500
+        );
+
+        // Build the McDonald's and get its dimensions
+        BlockVector3 dimensions = McDonaldsBuilding.build(buildLocation);
+
+        if (dimensions == null) {
+            player.sendMessage(Component.text("Failed to build McDonald's! Check console for errors."));
+            return;
+        }
+
+
+        initFryers(player, buildLocation);
+        initIceCreamMachines(player, buildLocation);
+
+
+        this.location = buildLocation;
+        this.dimensions = dimensions;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public BlockVector3 getDimensions() {
+        return dimensions;
+    }
+
 
     /**
      * Loads and places a McDonald's schematic at the specified location
@@ -94,6 +144,7 @@ public class McDonaldsBuilding {
             return null;
         }
 
+
         return build(baseLocation, schematicFile);
     }
 
@@ -117,9 +168,10 @@ public class McDonaldsBuilding {
         try (EditSession editSession = WorldEdit.getInstance().newEditSession(weWorld)) {
             // Clear the structure area based on its dimensions
             CuboidRegion region = new CuboidRegion(
-                BlockVector3.at(x, y, z),
-                BlockVector3.at(x + dimensions.x()+3,y - dimensions.y(),z - dimensions.z()-3)
+                BlockVector3.at(x-10, y, z),
+                BlockVector3.at(x + dimensions.x()+20,y - dimensions.y(),z - dimensions.z()-10)
             );
+            getLogger().info("Cuboid x region at " + x + " to " + (x+dimensions.x()+20));
             editSession.setBlocks(region, BlockTypes.AIR.getDefaultState());
 
             Operation op = editSession.commit();
@@ -152,4 +204,59 @@ public class McDonaldsBuilding {
         // Return location 50 blocks above
         return new Location(world, randomX, highestY + 50, randomZ);
     }
+
+
+    public void setFryer(Fryer fryer, int i) {
+        if(i == 0)
+        {
+            this.fryer1 = fryer;
+        }
+        else if(i == 2)
+        {
+           this.fryer2 = fryer;
+        }
+        else if(i == 4)
+        {
+            this.fryer3 = fryer;
+        }
+    }
+
+    public void initFryers(Player player, Location origin)
+    {
+
+        for(int i = 0; i <= 4; i+=2) {
+            Location cauldronLocation = origin.clone().add(1, -9, -18-i);
+            Block cauldron = cauldronLocation.getBlock();
+            World world = cauldronLocation.getWorld();
+            if (cauldron.getType() == Material.LAVA_CAULDRON) {
+                player.sendMessage(Component.text("✅ Found fryer 1 (cauldron)"));
+                Fryer fryer = new Fryer(world, cauldronLocation.getX(), cauldronLocation.getY(), cauldronLocation.getZ(),
+                        "🍟 Fryer " + (1 + i/2), "Status: Ready");
+                setFryer(fryer, i);
+            }
+
+
+        }
+    }
+
+    public void initIceCreamMachines(Player player, Location origin)
+    {
+       Location leverLocation = origin.clone().add(5, -7, -16);
+       Block lever = leverLocation.getBlock();
+       World world = leverLocation.getWorld();
+       IceCreamMachine iceCreamMachine = new IceCreamMachine(world, leverLocation.getX(), leverLocation.getY(), leverLocation.getZ());
+       setIceCreamMachine(iceCreamMachine);
+
+    }
+
+    public void setIceCreamMachine(IceCreamMachine iceCreamMachine)
+    {
+        this.iceCreamMachine = iceCreamMachine;
+    }
+
+    public IceCreamMachine getIceCreamMachine() {
+        return iceCreamMachine;
+    }
+
+
 }

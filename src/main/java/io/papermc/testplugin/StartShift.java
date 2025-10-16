@@ -29,6 +29,16 @@ public class StartShift implements CommandExecutor {
         player.sendMessage(Component.text("Building your McDonald's restaurant..."));
         plugin.buildMcDonaldsAndTeleport(player);
 
+
+        gameLoop(player);
+
+
+
         return true;
+    }
+
+
+    public void gameLoop(Player player) {
+        player.sendMessage(Component.text("Buckle up the gameloop just started"));
     }
 }

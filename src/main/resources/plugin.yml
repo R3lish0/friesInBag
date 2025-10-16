@@ -12,3 +12,6 @@ commands:
   endShift:
     description: ends your shift and demolishes the McDonald's
     usage: /endShift
+  cc:
+    description: get coordinates from origin
+    usage: /cc
