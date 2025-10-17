@@ -11,16 +11,16 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.Location;
 
-public class CompassHitListener implements Listener {
+public class ClockHitListener implements Listener {
 
     private final JavaPlugin plugin;
 
-    public CompassHitListener(JavaPlugin plugin) {
+    public ClockHitListener(JavaPlugin plugin) {
         this.plugin = plugin;
     }
 
     @EventHandler
-    public void onCompassHit(PlayerInteractEvent event) {
+    public void onClockHit(PlayerInteractEvent event) {
         Player player = event.getPlayer();
 
         // Only when holding a compass

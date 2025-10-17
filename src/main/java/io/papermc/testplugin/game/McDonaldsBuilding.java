@@ -1,4 +1,4 @@
-package io.papermc.testplugin;
+package io.papermc.testplugin.game;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -13,6 +13,8 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.block.BlockTypes;
+import io.papermc.testplugin.fryer.Fryer;
+import io.papermc.testplugin.icecream.IceCreamMachine;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -24,8 +26,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import org.bukkit.block.Block;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import static org.bukkit.Bukkit.getLogger;
 
@@ -51,7 +51,7 @@ public class McDonaldsBuilding  {
         );
 
         // Build the McDonald's and get its dimensions
-        BlockVector3 dimensions = McDonaldsBuilding.build(buildLocation);
+        BlockVector3 dimensions = build(buildLocation);
 
         if (dimensions == null) {
             player.sendMessage(Component.text("Failed to build McDonald's! Check console for errors."));
@@ -82,7 +82,7 @@ public class McDonaldsBuilding  {
      * @param schematicFile The schematic file to load
      * @return The size of the structure (for demolishing later), or null if failed
      */
-    public static BlockVector3 build(Location baseLocation, File schematicFile) {
+    public BlockVector3 build(Location baseLocation, File schematicFile) {
         com.sk89q.worldedit.world.World weWorld = BukkitAdapter.adapt(baseLocation.getWorld());
         BlockVector3 position = BlockVector3.at(
                 baseLocation.getBlockX(),
@@ -126,7 +126,7 @@ public class McDonaldsBuilding  {
      * @param baseLocation The base location where the structure will be built
      * @return The size of the structure, or null if failed
      */
-    public static BlockVector3 build(Location baseLocation) {
+    public BlockVector3 build(Location baseLocation) {
         // Look for schematic in plugin's schematics folder
         File schematicFile = new File("plugins/WorldEdit/schematics/mcdonalds.schem");
         
@@ -153,7 +153,7 @@ public class McDonaldsBuilding  {
      * @param baseLocation The base location where the structure was built
      * @param dimensions The dimensions of the structure to remove
      */
-    public static void demolish(Location baseLocation, BlockVector3 dimensions) {
+    public void demolish(Location baseLocation, BlockVector3 dimensions) {
         if (dimensions == null) {
             // Fallback to default size if dimensions not available
             dimensions = BlockVector3.at(15, 11, 15);

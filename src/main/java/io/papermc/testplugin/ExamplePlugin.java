@@ -1,16 +1,17 @@
 package io.papermc.testplugin;
 
 import com.sk89q.worldedit.math.BlockVector3;
+import io.papermc.testplugin.game.EndShift;
+import io.papermc.testplugin.game.McDonaldsBuilding;
+import io.papermc.testplugin.game.StartShift;
+import io.papermc.testplugin.icecream.ButtonClickListener;
+import io.papermc.testplugin.icecream.LeverClickListener;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -31,7 +32,7 @@ public class ExamplePlugin extends JavaPlugin implements Listener {
         this.getCommand("startshift").setExecutor(new StartShift(this));
         this.getCommand("endshift").setExecutor(new EndShift(this));
         this.getCommand("cc").setExecutor(new CC(this));
-        getServer().getPluginManager().registerEvents(new CompassHitListener(this), this);
+        getServer().getPluginManager().registerEvents(new ClockHitListener(this), this);
 
 
         getLogger().info("Hello, World!");
@@ -41,7 +42,6 @@ public class ExamplePlugin extends JavaPlugin implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         event.getPlayer().sendMessage(Component.text("Hello, " + event.getPlayer().getName() + "!"));
     }
-
 
 
 
@@ -55,10 +55,6 @@ public class ExamplePlugin extends JavaPlugin implements Listener {
      */
     public void buildMcDonaldsAndTeleport(Player player) {
 
-
-
-
-
         McDonaldsBuilding mcDonalds = new McDonaldsBuilding(player);
         BlockVector3 dimensions = mcDonalds.getDimensions();
         Location buildLocation = mcDonalds.getLocation();
@@ -67,8 +63,8 @@ public class ExamplePlugin extends JavaPlugin implements Listener {
         mcDonaldsLocations.put(player.getUniqueId(), buildLocation);
         mcDonaldsDimensions.put(player.getUniqueId(), dimensions);
         mcDonaldsObjects.put(player.getUniqueId(), mcDonalds);
-        getServer().getPluginManager().registerEvents(new LeverClickListener(mcDonalds.getIceCreamMachine()), this);
-
+        getServer().getPluginManager().registerEvents(new LeverClickListener(mcDonalds.getIceCreamMachine(), this), this);
+        getServer().getPluginManager().registerEvents(new ButtonClickListener(mcDonalds.getIceCreamMachine(), this), this);
 
         // Teleport player to the entrance (center of structure, ground level)
         getLogger().info("Teleporting player to McDonald's entrance...");
@@ -89,17 +85,19 @@ public class ExamplePlugin extends JavaPlugin implements Listener {
     public boolean demolishMcDonalds(Player player) {
         Location buildLocation = mcDonaldsLocations.get(player.getUniqueId());
         BlockVector3 dimensions = mcDonaldsDimensions.get(player.getUniqueId());
+        McDonaldsBuilding mc = mcDonaldsObjects.get(player.getUniqueId());
 
         if (buildLocation == null) {
             return false;
         }
 
         // Demolish the structure
-        McDonaldsBuilding.demolish(buildLocation, dimensions);
+        mc.demolish(buildLocation, dimensions);
 
         // Remove from tracking
         mcDonaldsLocations.remove(player.getUniqueId());
         mcDonaldsDimensions.remove(player.getUniqueId());
+        mcDonaldsObjects.remove(player.getUniqueId());
 
         getLogger().info("McDonald's demolished at: " + buildLocation.getBlockX() + ", " + buildLocation.getBlockY() + ", " + buildLocation.getBlockZ());
         return true;

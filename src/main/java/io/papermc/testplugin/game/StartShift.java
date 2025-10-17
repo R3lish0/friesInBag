@@ -1,16 +1,17 @@
-package io.papermc.testplugin;
+package io.papermc.testplugin.game;
 
-import net.kyori.adventure.text.Component;
+import io.papermc.testplugin.ExamplePlugin;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
-public class EndShift implements CommandExecutor {
+public class StartShift implements CommandExecutor {
 
     private final ExamplePlugin plugin;
 
-    public EndShift(ExamplePlugin plugin) {
+    public StartShift(ExamplePlugin plugin) {
         this.plugin = plugin;
     }
 
@@ -26,14 +27,19 @@ public class EndShift implements CommandExecutor {
             return true;
         }
 
-        boolean demolished = plugin.demolishMcDonalds(player);
-        
-        if (demolished) {
-            player.sendMessage(Component.text("Your shift has ended. McDonald's has been demolished."));
-        } else {
-            player.sendMessage(Component.text("You don't have an active McDonald's to demolish!"));
-        }
+        player.sendMessage(Component.text("Building your McDonald's restaurant..."));
+        plugin.buildMcDonaldsAndTeleport(player);
+
+
+        gameLoop(player);
+
+
 
         return true;
+    }
+
+
+    public void gameLoop(Player player) {
+        player.sendMessage(Component.text("Buckle up the gameloop just started"));
     }
 }

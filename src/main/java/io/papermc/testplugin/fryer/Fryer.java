@@ -1,10 +1,9 @@
-package io.papermc.testplugin;
+package io.papermc.testplugin.fryer;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class Fryer {
     private final Location location;
